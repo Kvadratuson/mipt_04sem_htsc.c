@@ -2,20 +2,33 @@
 #define HTSC_C_HTSC_H
 
 /* HTSC / htsc --- Hash Table with Separate Chaining */
+/* FNV / fnv --- 'Fowler/Noll/Vo' hash algorithm */
 
 #include <stddef.h>
 
 typedef enum htsc_errors htsc_errors_t;
 enum htsc_errors {
+    HTSC_IS_PRESENT = 0,
     HTSC_SUCCESS = 0,
     HTSC_FAILURE,
     HTSC_IS_NULL,
     HTSC_OUT_OF_MEMORY,
+    HTSC_IS_FULL,
+};
+
+typedef struct htsc_key htsc_key_t;
+struct htsc_key
+{
+    char *_data;
+    size_t _length;
 };
 
 typedef struct htsc_element htsc_element_t;
 struct htsc_element
-{};
+{
+    htsc_key_t _key;
+    size_t _link; /* a link to the next element */
+};
 
 typedef struct htsc htsc_t;
 struct htsc
@@ -27,5 +40,6 @@ struct htsc
 
 htsc_t *htsc_construct(size_t size, htsc_errors_t *err);
 void htsc_deconstruct(htsc_t *hash_table, htsc_errors_t *err);
+void htsc_insert(htsc_t *hash_table, const char *data, size_t length, htsc_errors_t *err);
 
 #endif /* HTSC_C_HTSC_H */
