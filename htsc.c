@@ -1,6 +1,7 @@
 #include "htsc.h"
 
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -136,4 +137,18 @@ void htsc_insert(htsc_t *hash_table, const char *data, size_t length, htsc_error
     hash_table->_table[i]->_link = hash_table->_index;
     htsc_set(hash_table, hash_table->_index, data, length, err);
     return;
+}
+
+void htsc_print(htsc_t *hash_table)
+{
+    printf("Size: %lu Index: %lu\n", hash_table->_size, hash_table->_index);
+    for (size_t i = 0; i <= hash_table->_size; ++i) {
+        if (hash_table->_table[i] != NULL) {
+            printf("%lu: Link: %lu Length: %lu", i, hash_table->_table[i]->_link, hash_table->_table[i]->_key._length);
+            printf("\n\t");
+            for (size_t j = 0; j < hash_table->_table[i]->_key._length; ++j)
+                printf("%c", hash_table->_table[i]->_key._data[j]);
+            printf("\n");
+        }
+    }
 }

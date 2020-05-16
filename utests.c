@@ -111,6 +111,8 @@ int main()
         printf("Insert.FULL: SUCCESS\n");
     }
 
+    htsc_print(hash_table);
+
     { /* Deconstruct.NULL */
         htsc_deconstruct(NULL, &err);
         if (err != HTSC_IS_NULL) {

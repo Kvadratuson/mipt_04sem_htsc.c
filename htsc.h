@@ -41,5 +41,6 @@ struct htsc
 htsc_t *htsc_construct(size_t size, htsc_errors_t *err);
 void htsc_deconstruct(htsc_t *hash_table, htsc_errors_t *err);
 void htsc_insert(htsc_t *hash_table, const char *data, size_t length, htsc_errors_t *err);
+void htsc_print(htsc_t *hash_table);
 
 #endif /* HTSC_C_HTSC_H */
