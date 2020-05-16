@@ -52,26 +52,26 @@ static const char * const test_data2[] =
 
 int main()
 {
-    htsc_errors_t err;
+    htsc_exit_codes_t exit_code;
     htsc_t *hash_table;
 
     { /* Construct */
-        hash_table = htsc_construct(HTSC_SIZE, &err);
-        if (err != HTSC_SUCCESS) {
+        hash_table = htsc_construct(HTSC_SIZE, &exit_code);
+        if (exit_code != HTSC_SUCCESS) {
             fprintf(stderr, "Constrcut: FAILURE\n");
-            exit(err);
+            exit(exit_code);
         }
         printf("Construct: SUCCESS\n");
     }
 
     { /* Insert.NULL */
-        htsc_insert(NULL, test_data1[0], strlen(test_data1[0]) + 1, &err);
-        if (err != HTSC_IS_NULL) {
+        htsc_insert(NULL, test_data1[0], strlen(test_data1[0]) + 1, &exit_code);
+        if (exit_code != HTSC_IS_NULL) {
             fprintf(stderr, "Insert.NULL: FAILURE\n");
             exit(HTSC_FAILURE);
         }
-        htsc_insert(hash_table, NULL, strlen(test_data1[0]) + 1, &err);
-        if (err != HTSC_IS_NULL) {
+        htsc_insert(hash_table, NULL, strlen(test_data1[0]) + 1, &exit_code);
+        if (exit_code != HTSC_IS_NULL) {
             fprintf(stderr, "Insert.NULL: FAILURE\n");
             exit(HTSC_FAILURE);
         }
@@ -80,10 +80,10 @@ int main()
 
     { /* Insert */
         for (size_t i = 0; i < TEST_DATA1_SIZE; ++i) {
-            htsc_insert(hash_table, test_data1[i], strlen(test_data1[i]) + 1, &err);
-            if (err != HTSC_SUCCESS) {
+            htsc_insert(hash_table, test_data1[i], strlen(test_data1[i]) + 1, &exit_code);
+            if (exit_code != HTSC_SUCCESS) {
                 fprintf(stderr, "Insert.%lu: FAILURE\n", i);
-                exit(err);
+                exit(exit_code);
             }
         }
         printf("Insert: SUCCESS\n");
@@ -91,10 +91,10 @@ int main()
 
     { /* Insert.PRESENT */
         for (size_t i = 0; i < TEST_DATA1_SIZE; ++i) {
-            htsc_insert(hash_table, test_data1[i], strlen(test_data1[i]) + 1, &err);
-            if (err != HTSC_IS_PRESENT) {
+            htsc_insert(hash_table, test_data1[i], strlen(test_data1[i]) + 1, &exit_code);
+            if (exit_code != HTSC_IS_PRESENT) {
                 fprintf(stderr, "Insert.PRESENT.%lu: FAILURE\n", i);
-                exit(err);
+                exit(exit_code);
             }
         }
         printf("Insert.PRESENT: SUCCESS\n");
@@ -102,20 +102,36 @@ int main()
 
     { /* Insert.FULL */
         for (size_t i = 0; i < TEST_DATA2_SIZE; ++i) {
-            htsc_insert(hash_table, test_data2[i], strlen(test_data2[i]) + 1, &err);
-            if (err != HTSC_IS_FULL) {
+            htsc_insert(hash_table, test_data2[i], strlen(test_data2[i]) + 1, &exit_code);
+            if (exit_code != HTSC_IS_FULL) {
                 fprintf(stderr, "Insert.FULL.%lu: FAILURE\n", i);
-                exit(err);
+                exit(exit_code);
             }
         }
         printf("Insert.FULL: SUCCESS\n");
     }
 
-    htsc_print(hash_table);
+    { /* Print.NULL */
+        htsc_print(NULL, &exit_code);
+        if (exit_code != HTSC_IS_NULL) {
+            fprintf(stderr, "Print.NULL: FAILURE\n");
+            exit(EXIT_FAILURE);
+        }
+        printf("Print.NULL: SUCCESS\n");
+    }
+
+    { /* Print */
+        htsc_print(hash_table, &exit_code);
+        if (exit_code != HTSC_SUCCESS) {
+            fprintf(stderr, "Print: FAILURE\n");
+            exit(exit_code);
+        }
+        printf("Print: SUCCESS\n");
+    }
 
     { /* Deconstruct.NULL */
-        htsc_deconstruct(NULL, &err);
-        if (err != HTSC_IS_NULL) {
+        htsc_deconstruct(NULL, &exit_code);
+        if (exit_code != HTSC_IS_NULL) {
             fprintf(stderr, "Deconstruct.NULL: FAILURE\n");
             exit(HTSC_FAILURE);
         }
@@ -123,10 +139,10 @@ int main()
     }
 
     { /* Deconstruct */
-        htsc_deconstruct(hash_table, &err);
-        if (err != HTSC_SUCCESS) {
+        htsc_deconstruct(hash_table, &exit_code);
+        if (exit_code != HTSC_SUCCESS) {
             fprintf(stderr, "Deconstruct: FAILURE\n");
-            exit(err);
+            exit(exit_code);
         }
         printf("Deconstruct: SUCCESS\n");
     }
