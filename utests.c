@@ -129,6 +129,53 @@ int main()
         printf("Print: SUCCESS\n");
     }
 
+    { /* Delete.NULL */
+        htsc_delete(NULL, test_data1[0], strlen(test_data1[0]) + 1, &exit_code);
+        if (exit_code != HTSC_IS_NULL) {
+            fprintf(stderr, "Delete.NULL: FAILURE\n");
+            exit(HTSC_FAILURE);
+        }
+        htsc_delete(hash_table, NULL, strlen(test_data1[0]) + 1, &exit_code);
+        if (exit_code != HTSC_IS_NULL) {
+            fprintf(stderr, "Delete.NULL: FAILURE\n");
+            exit(HTSC_FAILURE);
+        }
+        printf("Delete.NULL: SUCCESS\n");
+    }
+
+    { /* Delete */
+        htsc_delete(hash_table, test_data1[8], strlen(test_data1[8]) + 1, &exit_code);
+        if (exit_code != HTSC_SUCCESS) {
+            fprintf(stderr, "Delete: FAILURE\n");
+            exit(exit_code);
+        }
+        htsc_delete(hash_table, test_data1[1], strlen(test_data1[1]) + 1, &exit_code);
+        if (exit_code != HTSC_SUCCESS) {
+            fprintf(stderr, "Delete: FAILURE\n");
+            exit(exit_code);
+        }
+        printf("Delete: SUCCESS\n");
+    }
+
+    { /* Delete.NOTFOUND */
+        for (size_t i = 0; i < TEST_DATA2_SIZE; ++i) {
+            htsc_delete(hash_table, test_data2[i], strlen(test_data2[i]) + 1, &exit_code);
+            if (exit_code != HTSC_NOT_FOUND) {
+                fprintf(stderr, "Delete.NOTFOUND.%lu: FAILURE\n", i);
+                exit(HTSC_FAILURE);
+            }
+        }
+    }
+
+    { /* Print2 */
+        htsc_print(hash_table, &exit_code);
+        if (exit_code != HTSC_SUCCESS) {
+            fprintf(stderr, "Print2: FAILURE\n");
+            exit(exit_code);
+        }
+        printf("Print2: SUCCESS\n");
+    }
+
     { /* Deconstruct.NULL */
         htsc_deconstruct(NULL, &exit_code);
         if (exit_code != HTSC_IS_NULL) {

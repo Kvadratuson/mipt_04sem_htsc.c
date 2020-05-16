@@ -8,7 +8,8 @@
 
 typedef enum htsc_exit_codes htsc_exit_codes_t;
 enum htsc_exit_codes {
-    HTSC_IS_PRESENT = -1,
+    HTSC_NOT_FOUND = -2,
+    HTSC_IS_PRESENT,
     HTSC_SUCCESS = 0,
     HTSC_FAILURE,
     HTSC_IS_NULL,
@@ -41,6 +42,7 @@ struct htsc
 htsc_t *htsc_construct(size_t size, htsc_exit_codes_t *exit_code);
 void htsc_deconstruct(htsc_t *hash_table, htsc_exit_codes_t *exit_code);
 void htsc_insert(htsc_t *hash_table, const char *data, size_t length, htsc_exit_codes_t *exit_code);
+void htsc_delete(htsc_t *hash_table, const char *data, size_t length, htsc_exit_codes_t *exit_code);
 void htsc_print(htsc_t *hash_table, htsc_exit_codes_t *exit_code);
 
 #endif /* HTSC_C_HTSC_H */

@@ -139,6 +139,56 @@ void htsc_insert(htsc_t *hash_table, const char *data, size_t length, htsc_exit_
     return;
 }
 
+void htsc_unset(htsc_t *hash_table, size_t i)
+{
+    free(hash_table->_table[i]->_key._data);
+    free(hash_table->_table[i]);
+    hash_table->_table[i] = NULL;
+    return;
+}
+
+void htsc_delete(htsc_t *hash_table, const char *data, size_t length, htsc_exit_codes_t *exit_code)
+{
+    bool exit_code_is_null;
+    size_t i;
+    exit_code_is_null = (exit_code == NULL);
+    if ((hash_table == NULL) || (data == NULL)) {
+        if (!exit_code_is_null)
+            *exit_code = HTSC_IS_NULL;
+        return;
+    }
+    i = htsc_fnv_1a(data, length) % hash_table->_size + 1;
+    if (hash_table->_table[i] == NULL) {
+        if (!exit_code_is_null)
+            *exit_code = HTSC_NOT_FOUND;
+        return;
+    } else if (htsc_compare(hash_table, i, data, length)) {
+        htsc_unset(hash_table, i);
+        if (hash_table->_index < i)
+            hash_table->_index = i;
+        if (!exit_code_is_null)
+            *exit_code = HTSC_SUCCESS;
+        return;
+    }
+    while (hash_table->_table[i]->_link != 0) {
+        if (htsc_compare(hash_table, hash_table->_table[i]->_link, data, length)) {
+            size_t j;
+            j = hash_table->_table[i]->_link;
+            hash_table->_table[i]->_link = hash_table->_table[j]->_link;
+            htsc_unset(hash_table, j);
+            if (hash_table->_index < j)
+                hash_table->_index = j;
+            if (!exit_code_is_null)
+                *exit_code = HTSC_SUCCESS;
+            return;
+        }
+        i = hash_table->_table[i]->_link;
+    }
+    if (!exit_code_is_null)
+        *exit_code = HTSC_NOT_FOUND;
+    return;
+}
+
 void htsc_print(htsc_t *hash_table, htsc_exit_codes_t *exit_code)
 {
     bool exit_code_is_null;
