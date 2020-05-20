@@ -1,6 +1,5 @@
 #include "htsc.h"
 
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -187,6 +186,35 @@ void htsc_delete(htsc_t *hash_table, const char *data, size_t length, htsc_exit_
     if (!exit_code_is_null)
         *exit_code = HTSC_NOT_FOUND;
     return;
+}
+
+bool htsc_search(htsc_t *hash_table, const char *data, size_t length, htsc_exit_codes_t *exit_code)
+{
+    bool exit_code_is_null;
+    size_t i;
+    exit_code_is_null = (exit_code == NULL);
+    if ((hash_table == NULL) || (data == NULL)) {
+        if (!exit_code_is_null)
+            *exit_code = HTSC_IS_NULL;
+        return false;
+    }
+    i = htsc_fnv_1a(data, length) % hash_table->_size + 1;
+    if (hash_table->_table[i] == NULL) {
+        if (!exit_code_is_null)
+            *exit_code = HTSC_SUCCESS;
+        return false;
+    }
+    while (i != 0) {
+        if (htsc_compare(hash_table, i, data, length)) {
+            if (!exit_code_is_null)
+                *exit_code = HTSC_SUCCESS;
+            return true;
+        }
+        i = hash_table->_table[i]->_link;
+    }
+    if (!exit_code_is_null)
+        *exit_code = HTSC_SUCCESS;
+    return false;
 }
 
 void htsc_print(htsc_t *hash_table, htsc_exit_codes_t *exit_code)

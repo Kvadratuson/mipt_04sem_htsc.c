@@ -176,6 +176,38 @@ int main()
         printf("Print2: SUCCESS\n");
     }
 
+    { /* Search.NULL */
+        htsc_search(NULL, test_data1[0], strlen(test_data1[0]) + 1, &exit_code);
+        if (exit_code != HTSC_IS_NULL) {
+            fprintf(stderr, "Search.NULL: FAILURE\n");
+            exit(HTSC_FAILURE);
+        }
+        htsc_search(hash_table, NULL, strlen(test_data1[0]) + 1, &exit_code);
+        if (exit_code != HTSC_IS_NULL) {
+            fprintf(stderr, "Search.NULL: FAILURE\n");
+            exit(HTSC_FAILURE);
+        }
+        printf("Search.NULL: SUCCESS\n");
+    }
+
+    { /* Search */
+        if (htsc_search(hash_table, test_data1[1], strlen(test_data1[1]) + 1, &exit_code)) {
+            fprintf(stderr, "Search: FAILURE\n");
+            exit(EXIT_FAILURE);
+        } else if (exit_code != HTSC_SUCCESS) {
+            fprintf(stderr, "Search: FAILURE\n");
+            exit(exit_code);
+        }
+        if (!htsc_search(hash_table, test_data1[6], strlen(test_data1[6]) + 1, &exit_code)) {
+            fprintf(stderr, "Search: FAILURE\n");
+            exit(EXIT_FAILURE);
+        } else if (exit_code != HTSC_SUCCESS) {
+            fprintf(stderr, "Search: FAILURE\n");
+            exit(exit_code);
+        }
+        printf("Search: SUCCESS\n");
+    }
+
     { /* Deconstruct.NULL */
         htsc_deconstruct(NULL, &exit_code);
         if (exit_code != HTSC_IS_NULL) {
