@@ -52,7 +52,7 @@ static const char * const test_data2[] =
 
 int main()
 {
-    htsc_exit_codes_t exit_code;
+    htsc_exit_code_t exit_code;
     htsc_t *hash_table;
 
     { /* Construct */
@@ -129,39 +129,39 @@ int main()
         printf("Print: SUCCESS\n");
     }
 
-    { /* Delete.NULL */
-        htsc_delete(NULL, test_data1[0], strlen(test_data1[0]) + 1, &exit_code);
+    { /* Erase.NULL */
+        htsc_erase(NULL, test_data1[0], strlen(test_data1[0]) + 1, &exit_code);
         if (exit_code != HTSC_IS_NULL) {
-            fprintf(stderr, "Delete.NULL: FAILURE\n");
+            fprintf(stderr, "Erase.NULL: FAILURE\n");
             exit(HTSC_FAILURE);
         }
-        htsc_delete(hash_table, NULL, strlen(test_data1[0]) + 1, &exit_code);
+        htsc_erase(hash_table, NULL, strlen(test_data1[0]) + 1, &exit_code);
         if (exit_code != HTSC_IS_NULL) {
-            fprintf(stderr, "Delete.NULL: FAILURE\n");
+            fprintf(stderr, "Erase.NULL: FAILURE\n");
             exit(HTSC_FAILURE);
         }
-        printf("Delete.NULL: SUCCESS\n");
+        printf("Erase.NULL: SUCCESS\n");
     }
 
-    { /* Delete */
-        htsc_delete(hash_table, test_data1[8], strlen(test_data1[8]) + 1, &exit_code);
+    { /* Erase */
+        htsc_erase(hash_table, test_data1[8], strlen(test_data1[8]) + 1, &exit_code);
         if (exit_code != HTSC_SUCCESS) {
-            fprintf(stderr, "Delete: FAILURE\n");
+            fprintf(stderr, "Erase: FAILURE\n");
             exit(exit_code);
         }
-        htsc_delete(hash_table, test_data1[1], strlen(test_data1[1]) + 1, &exit_code);
+        htsc_erase(hash_table, test_data1[1], strlen(test_data1[1]) + 1, &exit_code);
         if (exit_code != HTSC_SUCCESS) {
-            fprintf(stderr, "Delete: FAILURE\n");
+            fprintf(stderr, "Erase: FAILURE\n");
             exit(exit_code);
         }
-        printf("Delete: SUCCESS\n");
+        printf("Erase: SUCCESS\n");
     }
 
-    { /* Delete.NOTFOUND */
+    { /* Erase.NOTFOUND */
         for (size_t i = 0; i < TEST_DATA2_SIZE; ++i) {
-            htsc_delete(hash_table, test_data2[i], strlen(test_data2[i]) + 1, &exit_code);
+            htsc_erase(hash_table, test_data2[i], strlen(test_data2[i]) + 1, &exit_code);
             if (exit_code != HTSC_NOT_FOUND) {
-                fprintf(stderr, "Delete.NOTFOUND.%lu: FAILURE\n", i);
+                fprintf(stderr, "Erase.NOTFOUND.%lu: FAILURE\n", i);
                 exit(HTSC_FAILURE);
             }
         }
@@ -176,36 +176,36 @@ int main()
         printf("Print2: SUCCESS\n");
     }
 
-    { /* Search.NULL */
-        htsc_search(NULL, test_data1[0], strlen(test_data1[0]) + 1, &exit_code);
+    { /* Find.NULL */
+        htsc_find(NULL, test_data1[0], strlen(test_data1[0]) + 1, &exit_code);
         if (exit_code != HTSC_IS_NULL) {
-            fprintf(stderr, "Search.NULL: FAILURE\n");
+            fprintf(stderr, "Find.NULL: FAILURE\n");
             exit(HTSC_FAILURE);
         }
-        htsc_search(hash_table, NULL, strlen(test_data1[0]) + 1, &exit_code);
+        htsc_find(hash_table, NULL, strlen(test_data1[0]) + 1, &exit_code);
         if (exit_code != HTSC_IS_NULL) {
-            fprintf(stderr, "Search.NULL: FAILURE\n");
+            fprintf(stderr, "Find.NULL: FAILURE\n");
             exit(HTSC_FAILURE);
         }
-        printf("Search.NULL: SUCCESS\n");
+        printf("Find.NULL: SUCCESS\n");
     }
 
-    { /* Search */
-        if (htsc_search(hash_table, test_data1[1], strlen(test_data1[1]) + 1, &exit_code)) {
-            fprintf(stderr, "Search: FAILURE\n");
+    { /* Find */
+        if (htsc_find(hash_table, test_data1[1], strlen(test_data1[1]) + 1, &exit_code)) {
+            fprintf(stderr, "Find: FAILURE\n");
             exit(EXIT_FAILURE);
         } else if (exit_code != HTSC_SUCCESS) {
-            fprintf(stderr, "Search: FAILURE\n");
+            fprintf(stderr, "Find: FAILURE\n");
             exit(exit_code);
         }
-        if (!htsc_search(hash_table, test_data1[6], strlen(test_data1[6]) + 1, &exit_code)) {
-            fprintf(stderr, "Search: FAILURE\n");
+        if (!htsc_find(hash_table, test_data1[6], strlen(test_data1[6]) + 1, &exit_code)) {
+            fprintf(stderr, "Find: FAILURE\n");
             exit(EXIT_FAILURE);
         } else if (exit_code != HTSC_SUCCESS) {
-            fprintf(stderr, "Search: FAILURE\n");
+            fprintf(stderr, "Find: FAILURE\n");
             exit(exit_code);
         }
-        printf("Search: SUCCESS\n");
+        printf("Find: SUCCESS\n");
     }
 
     { /* Deconstruct.NULL */
@@ -226,5 +226,5 @@ int main()
         printf("Deconstruct: SUCCESS\n");
     }
 
-    exit(HTSC_SUCCESS);
+    exit(EXIT_SUCCESS);
 }

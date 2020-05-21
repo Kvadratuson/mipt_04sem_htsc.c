@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-htsc_t *htsc_construct(size_t size, htsc_exit_codes_t *exit_code)
+htsc_t *htsc_construct(size_t size, htsc_exit_code_t *exit_code)
 {
     bool exit_code_is_null;
     htsc_t *hash_table;
@@ -15,21 +15,21 @@ htsc_t *htsc_construct(size_t size, htsc_exit_codes_t *exit_code)
             *exit_code = HTSC_OUT_OF_MEMORY;
         return NULL;
     }
-    hash_table->_size = size;
-    hash_table->_table = calloc(hash_table->_size + 1, sizeof(*hash_table->_table));
-    if (hash_table->_table == NULL) {
+    hash_table->m_size = size;
+    hash_table->pp_table = calloc(hash_table->m_size + 1, sizeof(*hash_table->pp_table));
+    if (hash_table->pp_table == NULL) {
         if (!exit_code_is_null)
             *exit_code = HTSC_OUT_OF_MEMORY;
         free(hash_table);
         return NULL;
     }
-    hash_table->_index = hash_table->_size;
+    hash_table->i_index = hash_table->m_size;
     if (!exit_code_is_null)
         *exit_code = HTSC_SUCCESS;
     return hash_table;
 }
 
-void htsc_deconstruct(htsc_t *hash_table, htsc_exit_codes_t *exit_code)
+void htsc_deconstruct(htsc_t *hash_table, htsc_exit_code_t *exit_code)
 {
     bool exit_code_is_null;
     exit_code_is_null = (exit_code == NULL);
@@ -38,13 +38,13 @@ void htsc_deconstruct(htsc_t *hash_table, htsc_exit_codes_t *exit_code)
             *exit_code = HTSC_IS_NULL;
         return;
     }
-    for (size_t i = 0; i <= hash_table->_size; ++i) {
-        if (hash_table->_table[i] != NULL) {
-            free(hash_table->_table[i]->_key._data);
-            free(hash_table->_table[i]);
+    for (size_t i = 0; i <= hash_table->m_size; ++i) {
+        if (hash_table->pp_table[i] != NULL) {
+            free(hash_table->pp_table[i]->m_key.p_data);
+            free(hash_table->pp_table[i]);
         }
     }
-    free(hash_table->_table);
+    free(hash_table->pp_table);
     free(hash_table);
     if (!exit_code_is_null)
         *exit_code = HTSC_SUCCESS;
@@ -65,21 +65,21 @@ size_t htsc_fnv_1a(const char *data, size_t length)
     return hash;
 }
 
-void htsc_set(htsc_t *hash_table, size_t i, const char *data, size_t length, htsc_exit_codes_t *exit_code)
+void htsc_set(htsc_t *hash_table, size_t i, const char *data, size_t length, htsc_exit_code_t *exit_code)
 {
     bool exit_code_is_null;
     exit_code_is_null = (exit_code == NULL);
-    hash_table->_table[i] = malloc(sizeof(*hash_table->_table[i]));
-    if (hash_table->_table[i] == NULL) {
+    hash_table->pp_table[i] = malloc(sizeof(*hash_table->pp_table[i]));
+    if (hash_table->pp_table[i] == NULL) {
         if (!exit_code_is_null)
             *exit_code = HTSC_OUT_OF_MEMORY;
         return;
     }
-    hash_table->_table[i]->_link = 0;
-    hash_table->_table[i]->_key._length = length;
-    hash_table->_table[i]->_key._data = malloc(hash_table->_table[i]->_key._length
-                                                * sizeof(*hash_table->_table[i]->_key._data));
-    memcpy(hash_table->_table[i]->_key._data, data, length);
+    hash_table->pp_table[i]->i_link = 0;
+    hash_table->pp_table[i]->m_key.m_length = length;
+    hash_table->pp_table[i]->m_key.p_data = malloc(hash_table->pp_table[i]->m_key.m_length
+                                                * sizeof(*hash_table->pp_table[i]->m_key.p_data));
+    memcpy(hash_table->pp_table[i]->m_key.p_data, data, length);
     if (!exit_code_is_null)
         *exit_code = HTSC_SUCCESS;
     return;
@@ -88,9 +88,9 @@ void htsc_set(htsc_t *hash_table, size_t i, const char *data, size_t length, hts
 bool htsc_compare(htsc_t *hash_table, size_t i, const char *data, size_t length)
 {
     size_t j;
-    if (length == hash_table->_table[i]->_key._length) {
+    if (length == hash_table->pp_table[i]->m_key.m_length) {
         for (j = 0; j < length; ++j) {
-            if (data[j] != hash_table->_table[i]->_key._data[j])
+            if (data[j] != hash_table->pp_table[i]->m_key.p_data[j])
                 break;
         }
         if (j == length)
@@ -99,7 +99,7 @@ bool htsc_compare(htsc_t *hash_table, size_t i, const char *data, size_t length)
     return false;
 }
 
-void htsc_insert(htsc_t *hash_table, const char *data, size_t length, htsc_exit_codes_t *exit_code)
+void htsc_insert(htsc_t *hash_table, const char *data, size_t length, htsc_exit_code_t *exit_code)
 {
     bool exit_code_is_null;
     size_t i;
@@ -109,8 +109,8 @@ void htsc_insert(htsc_t *hash_table, const char *data, size_t length, htsc_exit_
             *exit_code = HTSC_IS_NULL;
         return;
     }
-    i = htsc_fnv_1a(data, length) % hash_table->_size + 1;
-    if (hash_table->_table[i] == NULL) {
+    i = htsc_fnv_1a(data, length) % hash_table->m_size + 1;
+    if (hash_table->pp_table[i] == NULL) {
         htsc_set(hash_table, i, data, length, exit_code);
         return;
     } else if (htsc_compare(hash_table, i, data, length)) {
@@ -118,35 +118,35 @@ void htsc_insert(htsc_t *hash_table, const char *data, size_t length, htsc_exit_
             *exit_code = HTSC_IS_PRESENT;
         return;
     }
-    while (hash_table->_table[i]->_link != 0) {
-        i = hash_table->_table[i]->_link;
+    while (hash_table->pp_table[i]->i_link != 0) {
+        i = hash_table->pp_table[i]->i_link;
         if (htsc_compare(hash_table, i, data, length)) {
             if (!exit_code_is_null)
                 *exit_code = HTSC_IS_PRESENT;
             return;
         }
     }
-    while(hash_table->_table[hash_table->_index] != NULL)
-        --hash_table->_index;
-    if (hash_table->_index == 0) {
+    while(hash_table->pp_table[hash_table->i_index] != NULL)
+        --hash_table->i_index;
+    if (hash_table->i_index == 0) {
         if (!exit_code_is_null)
             *exit_code = HTSC_IS_FULL;
         return;
     }
-    hash_table->_table[i]->_link = hash_table->_index;
-    htsc_set(hash_table, hash_table->_index, data, length, exit_code);
+    hash_table->pp_table[i]->i_link = hash_table->i_index;
+    htsc_set(hash_table, hash_table->i_index, data, length, exit_code);
     return;
 }
 
 void htsc_unset(htsc_t *hash_table, size_t i)
 {
-    free(hash_table->_table[i]->_key._data);
-    free(hash_table->_table[i]);
-    hash_table->_table[i] = NULL;
+    free(hash_table->pp_table[i]->m_key.p_data);
+    free(hash_table->pp_table[i]);
+    hash_table->pp_table[i] = NULL;
     return;
 }
 
-void htsc_delete(htsc_t *hash_table, const char *data, size_t length, htsc_exit_codes_t *exit_code)
+void htsc_erase(htsc_t *hash_table, const char *data, size_t length, htsc_exit_code_t *exit_code)
 {
     bool exit_code_is_null;
     size_t i;
@@ -156,39 +156,39 @@ void htsc_delete(htsc_t *hash_table, const char *data, size_t length, htsc_exit_
             *exit_code = HTSC_IS_NULL;
         return;
     }
-    i = htsc_fnv_1a(data, length) % hash_table->_size + 1;
-    if (hash_table->_table[i] == NULL) {
+    i = htsc_fnv_1a(data, length) % hash_table->m_size + 1;
+    if (hash_table->pp_table[i] == NULL) {
         if (!exit_code_is_null)
             *exit_code = HTSC_NOT_FOUND;
         return;
     } else if (htsc_compare(hash_table, i, data, length)) {
         htsc_unset(hash_table, i);
-        if (hash_table->_index < i)
-            hash_table->_index = i;
+        if (hash_table->i_index < i)
+            hash_table->i_index = i;
         if (!exit_code_is_null)
             *exit_code = HTSC_SUCCESS;
         return;
     }
-    while (hash_table->_table[i]->_link != 0) {
-        if (htsc_compare(hash_table, hash_table->_table[i]->_link, data, length)) {
+    while (hash_table->pp_table[i]->i_link != 0) {
+        if (htsc_compare(hash_table, hash_table->pp_table[i]->i_link, data, length)) {
             size_t j;
-            j = hash_table->_table[i]->_link;
-            hash_table->_table[i]->_link = hash_table->_table[j]->_link;
+            j = hash_table->pp_table[i]->i_link;
+            hash_table->pp_table[i]->i_link = hash_table->pp_table[j]->i_link;
             htsc_unset(hash_table, j);
-            if (hash_table->_index < j)
-                hash_table->_index = j;
+            if (hash_table->i_index < j)
+                hash_table->i_index = j;
             if (!exit_code_is_null)
                 *exit_code = HTSC_SUCCESS;
             return;
         }
-        i = hash_table->_table[i]->_link;
+        i = hash_table->pp_table[i]->i_link;
     }
     if (!exit_code_is_null)
         *exit_code = HTSC_NOT_FOUND;
     return;
 }
 
-bool htsc_search(htsc_t *hash_table, const char *data, size_t length, htsc_exit_codes_t *exit_code)
+bool htsc_find(htsc_t *hash_table, const char *data, size_t length, htsc_exit_code_t *exit_code)
 {
     bool exit_code_is_null;
     size_t i;
@@ -198,8 +198,8 @@ bool htsc_search(htsc_t *hash_table, const char *data, size_t length, htsc_exit_
             *exit_code = HTSC_IS_NULL;
         return false;
     }
-    i = htsc_fnv_1a(data, length) % hash_table->_size + 1;
-    if (hash_table->_table[i] == NULL) {
+    i = htsc_fnv_1a(data, length) % hash_table->m_size + 1;
+    if (hash_table->pp_table[i] == NULL) {
         if (!exit_code_is_null)
             *exit_code = HTSC_SUCCESS;
         return false;
@@ -210,14 +210,14 @@ bool htsc_search(htsc_t *hash_table, const char *data, size_t length, htsc_exit_
                 *exit_code = HTSC_SUCCESS;
             return true;
         }
-        i = hash_table->_table[i]->_link;
+        i = hash_table->pp_table[i]->i_link;
     }
     if (!exit_code_is_null)
         *exit_code = HTSC_SUCCESS;
     return false;
 }
 
-void htsc_print(htsc_t *hash_table, htsc_exit_codes_t *exit_code)
+void htsc_print(htsc_t *hash_table, htsc_exit_code_t *exit_code)
 {
     bool exit_code_is_null;
     exit_code_is_null = (exit_code == NULL);
@@ -226,13 +226,13 @@ void htsc_print(htsc_t *hash_table, htsc_exit_codes_t *exit_code)
             *exit_code = HTSC_IS_NULL;
         return;
     }
-    printf("Size: %lu Index: %lu\n", hash_table->_size, hash_table->_index);
-    for (size_t i = 0; i <= hash_table->_size; ++i) {
-        if (hash_table->_table[i] != NULL) {
-            printf("%lu: Link: %lu Length: %lu", i, hash_table->_table[i]->_link, hash_table->_table[i]->_key._length);
+    printf("Size: %lu Index: %lu\n", hash_table->m_size, hash_table->i_index);
+    for (size_t i = 0; i <= hash_table->m_size; ++i) {
+        if (hash_table->pp_table[i] != NULL) {
+            printf("%lu: Link: %lu Length: %lu", i, hash_table->pp_table[i]->i_link, hash_table->pp_table[i]->m_key.m_length);
             printf("\n\t");
-            for (size_t j = 0; j < hash_table->_table[i]->_key._length; ++j)
-                printf("%c", hash_table->_table[i]->_key._data[j]);
+            for (size_t j = 0; j < hash_table->pp_table[i]->m_key.m_length; ++j)
+                printf("%c", hash_table->pp_table[i]->m_key.p_data[j]);
             printf("\n");
         }
     }
