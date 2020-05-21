@@ -205,6 +205,13 @@ int main()
             fprintf(stderr, "Find: FAILURE\n");
             exit(exit_code);
         }
+        if (htsc_find(hash_table, test_data2[0], strlen(test_data2[0]) + 1, &exit_code)) {
+            fprintf(stderr, "Find: FAILURE\n");
+            exit(EXIT_FAILURE);
+        } else if (exit_code != HTSC_SUCCESS) {
+            fprintf(stderr, "Find: FAILURE\n");
+            exit(exit_code);
+        }
         printf("Find: SUCCESS\n");
     }
 
