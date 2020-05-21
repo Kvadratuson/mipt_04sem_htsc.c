@@ -2,7 +2,7 @@ LIBRARY := htsc
 TESTS   := utests
 
 CFLAGS       := -Wall
-CFLAGS_DEBUG := -Wall -fprofile-arcs -ftest-coverage
+CFLAGS_DEBUG := -Wall --coverage
 
 CC := gcc
 
@@ -29,6 +29,6 @@ $(LIBRARY)_debug.o: $(LIBRARY).c $(LIBRARY).h
 	$(CC) $< -c $(CFLAGS_DEBUG) -o $@
 
 clean:
-	rm -rf *.o *.a $(TESTS) *.gcno *.gcda *.gcov
+	rm -rf *.o *.a $(TESTS) *.gcno *.gcda *.gcov vgcore*
 
 .PHONY: all release debug clean
