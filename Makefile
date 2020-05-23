@@ -1,8 +1,8 @@
 LIBRARY := htsc
 TESTS   := utests
 
-CFLAGS       := -Wall
-CFLAGS_DEBUG := -Wall --coverage
+CFLAGS       := -std=c99 -Wall
+CFLAGS_DEBUG := -std=c99 -Wall --coverage
 
 CC := gcc
 
